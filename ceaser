@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <ctype.h>
+// #include <ctype.h> directive included, which provides the isalnum, islower, isupper, and isdigit functions
+void encrypt(char text[], int key) {
+    char ch;
+    for (int i = 0; text[i] != '\0'; ++i) {
+        ch = text[i];
+        if (isalnum(ch)) {
+            if (islower(ch)) {
+                ch = (ch - 'a' + key) % 26 + 'a';
+            } else if (isupper(ch)) {
+                ch = (ch - 'A' + key) % 26 + 'A';
+            } else if (isdigit(ch)) {
+                ch = (ch - '0' + key) % 10 + '0';
+            }
+        } else {
+            printf("Invalid Message\n");
+            return;
+        }
+        text[i] = ch;
+    }
+    printf("Encrypted message: %s\n", text);
+}
+
+void decrypt(char text[], int key) {
+    char ch;
+    for (int i = 0; text[i] != '\0'; ++i) {
+        ch = text[i];
+        if (isalnum(ch)) {
+            if (islower(ch)) {
+                ch = (ch - 'a' - key + 26) % 26 + 'a';
+            } else if (isupper(ch)) {
+                ch = (ch - 'A' - key + 26) % 26 + 'A';
+            } else if (isdigit(ch)) {
+                ch = (ch - '0' - key + 10) % 10 + '0';
+            }
+        } else {
+            printf("Invalid Message\n");
+            return;
+        }
+        text[i] = ch;
+    }
+    printf("Decrypted message: %s\n", text);
+}
+
+int main() {
+    char text[500];
+    int key;
+   
+
+    // printf("Do you want to (e)ncrypt or (d)ecrypt a message? ");
+    // scanf(" %c", &choice);
+
+    printf("Enter the message: ");
+    scanf("%s", text);
+
+    printf("Enter the key: ");
+    scanf("%d", &key);
+    encrypt(text, key);
+    decrypt(text, key);
+
+    // if (choice == 'e') {
+    //     encrypt(text, key);
+    // } else if (choice == 'd') {
+    //     decrypt(text, key);
+    // } else {
+    //     printf("Invalid choice\n");
+    // }
+
+    return 0;
+}
