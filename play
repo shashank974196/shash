@@ -1,0 +1,179 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define SIZE 5
+
+void toUpperCase(char str[], int length) {
+    for (int i = 0; i < length; i++) {
+        if (str[i] >= 'a' && str[i] <= 'z') {
+            str[i] -= 32;
+        }
+    }
+}
+
+void toLowerCase(char str[], int length) {
+    for (int i = 0; i < length; i++) {
+        if (str[i] >= 'A' && str[i] <= 'Z') {
+            str[i] += 32;
+        }
+    }
+}
+
+int removeSpaces(char* str, int length) {
+    int count = 0;
+    for (int i = 0; i < length; i++) {
+        if (str[i] != ' ') {
+            str[count++] = str[i];
+        }
+    }
+    str[count] = '\0';
+    return count;
+}
+
+void createMatrix(char key[], int length, char keyMat[SIZE][SIZE]) {
+    int dict[26] = {0};
+    int i, j, k;
+
+    // Fill the key into the matrix
+    for (i = 0, j = 0, k = 0; k < length; k++) {
+        if (key[k] != 'j' && !dict[key[k] - 'a']) {
+            keyMat[i][j++] = key[k];
+            dict[key[k] - 'a'] = 1;
+            if (j == SIZE) {
+                i++;
+                j = 0;
+            }
+        }
+    }
+
+    // Fill the rest of the matrix with remaining letters
+    for (k = 0; k < 26; k++) {
+        if ((char)(k + 'a') != 'j' && !dict[k]) {
+            keyMat[i][j++] = (char)(k + 'a');
+            if (j == SIZE) {
+                i++;
+                j = 0;
+            }
+        }
+    }
+}
+
+void search(char keyMat[SIZE][SIZE], char a, char b, int arr[]) {
+    if (a == 'j') a = 'i';
+    if (b == 'j') b = 'i';
+
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            if (keyMat[i][j] == a) {
+                arr[0] = i;
+                arr[1] = j;
+            }
+            if (keyMat[i][j] == b) {
+                arr[2] = i;
+                arr[3] = j;
+            }
+        }
+    }
+}
+
+int prep(char str[], int length) {
+    for (int i = 0; i < length; i += 2) {
+        if (str[i] == str[i + 1]) {
+            for (int j = length; j > i + 1; j--) {
+                str[j] = str[j - 1];
+            }
+            str[i + 1] = 'x';
+            length++;
+        }
+    }
+    if (length % 2 != 0) {
+        str[length++] = 'z';
+    }
+    str[length] = '\0';
+    return length;
+}
+
+void encrypt(char str[], char keyMat[SIZE][SIZE], int length) {
+    int a[4];
+
+    for (int i = 0; i < length; i += 2) {
+        search(keyMat, str[i], str[i + 1], a);
+
+        if (a[0] == a[2]) {
+            str[i] = keyMat[a[0]][(a[1] + 1) % SIZE];
+            str[i + 1] = keyMat[a[2]][(a[3] + 1) % SIZE];
+        } else if (a[1] == a[3]) {
+            str[i] = keyMat[(a[0] + 1) % SIZE][a[1]];
+            str[i + 1] = keyMat[(a[2] + 1) % SIZE][a[1]];
+        } else {
+            str[i] = keyMat[a[0]][a[3]];
+            str[i + 1] = keyMat[a[2]][a[1]];
+        }
+    }
+}
+
+void decrypt(char str[], char keyMat[SIZE][SIZE], int length) {
+    int a[4];
+
+    for (int i = 0; i < length; i += 2) {
+        search(keyMat, str[i], str[i + 1], a);
+
+        if (a[0] == a[2]) {
+            str[i] = keyMat[a[0]][(a[1] - 1 + SIZE) % SIZE];
+            str[i + 1] = keyMat[a[2]][(a[3] - 1 + SIZE) % SIZE];
+        } else if (a[1] == a[3]) {
+            str[i] = keyMat[(a[0] - 1 + SIZE) % SIZE][a[1]];
+            str[i + 1] = keyMat[(a[2] - 1 + SIZE) % SIZE][a[1]];
+        } else {
+            str[i] = keyMat[a[0]][a[3]];
+            str[i + 1] = keyMat[a[2]][a[1]];
+        }
+    }
+}
+
+void Playfair(char str[], char key[]) {
+    char keyMat[SIZE][SIZE];
+    int keyLength = strlen(key);
+    int textLength = strlen(str);
+
+    keyLength = removeSpaces(key, keyLength);
+    textLength = removeSpaces(str, textLength);
+    textLength = prep(str, textLength);
+
+    createMatrix(key, keyLength, keyMat);
+    encrypt(str, keyMat, textLength);
+    toUpperCase(str, textLength);
+
+    printf("Cipher text: %s\n", str);
+}
+
+void PlayfairDecrypt(char str[], char key[]) {
+    char keyMat[SIZE][SIZE];
+    int keyLength = strlen(key);
+    int textLength = strlen(str);
+
+    keyLength = removeSpaces(key, keyLength);
+    textLength = removeSpaces(str, textLength);
+    toLowerCase(str, textLength);
+
+    createMatrix(key, keyLength, keyMat);
+    decrypt(str, keyMat, textLength);
+
+    printf("Decrypted text: %s\n", str);
+}
+
+int main() {
+    char string[200], keyString[200];
+    printf("Enter key: ");
+    scanf("%[^\n]s", keyString);
+    printf("Enter plaintext: ");
+    scanf("\n");
+    scanf("%[^\n]s", string);
+
+    Playfair(string, keyString);
+    PlayfairDecrypt(string, keyString);
+
+    return 0;
+}
