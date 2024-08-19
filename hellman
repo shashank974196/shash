@@ -1,0 +1,50 @@
+#include<stdio.h>
+#include<math.h>
+long long int power(int q,int p,int xa)
+{
+   if(xa==1)
+   {
+    return q;
+   }
+   else{
+    return (((long long int)pow(q,xa))%p);
+   }
+}
+int main()
+{
+    long long int p,q,xa,xb,ya,yb,ka,kb;
+    printf("enter prime number p\n");
+    scanf("%lld",&p);
+     printf("enter primitive root p\n");
+    scanf("%lld",&q);
+     printf("enter  xa\n");
+    scanf("%lld",&xa);
+     printf("enter xb\n");
+    scanf("%lld",&xb);
+
+    ya=power(q,p,xa);
+    yb=power(q,p,xb);
+    ka=power(yb,p,xa);
+    kb=power(ya,p,xb);
+
+    printf("privete key for a is %lld\n",xa);
+    printf("privete key for b is %lld\n",xb);
+
+
+    printf("public  key for a is %lld\n",ya);
+    printf("public key for b is %lld\n",yb);
+
+    if(ka==kb)
+    {
+        printf("key exchange is success\n");
+        printf("secrete key for a is %lld\n",ka);
+        printf("secrete key for b is %lld\n",kb);
+        return 1;
+    }
+    else{
+        printf("key exchange is failed\n");
+        return 0;
+    }
+
+
+}
