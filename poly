@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+int j,i;
+// void newKey(char* key, char pt[]) {
+//     int keyLen = strlen(key);
+//     int ptLen = strlen(pt);
+//     for (int i = 0; i < ptLen; i++) {
+//         key[keyLen + i] = key[i % keyLen];
+//     }
+//     key[ptLen + keyLen] = '\0';
+// }
+
+void newKey(char* key,char pt[])
+{
+    j=0;
+    for(i=strlen(key);i<strlen(pt);i++)
+    {
+        if(j==strlen(key))
+        {
+            j=0;
+        }
+        key[i]=key[j];
+        j++;
+    }
+}
+
+void encrypt(char key[], char pt[], char* ct) {
+    int ptLen = strlen(pt);
+    for (int i = 0; i < ptLen; i++) {
+        if (isupper(pt[i])) {
+            ct[i] = (((pt[i] - 'A') + (toupper(key[i]) - 'A')) % 26) + 'A';
+        } else {
+            ct[i] = (((pt[i] - 'a') + (tolower(key[i]) - 'a')) % 26) + 'a';
+        }
+    }
+    ct[ptLen] = '\0';
+}
+
+void decrypt(char key[], char ct[], char* rt) {
+    int ctLen = strlen(ct);
+    for (int i = 0; i < ctLen; i++) {
+        if (isupper(ct[i])) {
+            rt[i] = (((ct[i] - 'A') - (toupper(key[i]) - 'A') + 26) % 26) + 'A';
+        } else {
+            rt[i] = (((ct[i] - 'a') - (tolower(key[i]) - 'a') + 26) % 26) + 'a';
+        }
+    }
+    rt[ctLen] = '\0';
+}
+
+int main() {
+    char pt[100] = {'\0'}, ct[100] = {'\0'}, key[100] = {'\0'}, rt[100] = {'\0'};
+
+    printf("\n Enter the plain text: ");
+    scanf("%s", pt);
+    printf("\n Enter the key: ");
+    scanf("%s", key);
+
+    newKey(key, pt);
+    printf("\n The new key is: %s", key);
+
+    encrypt(key, pt, ct);
+    printf("\n\n The cipher text is: %s", ct);
+
+    decrypt(key, ct, rt);
+    printf("\n\n The decrypted text is: %s\n", rt);
+
+    return 0;
+}
