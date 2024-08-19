@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <string.h>
+
+#define ALPHABET_SIZE 26
+
+void completeKey(char key[]) {
+    int used[ALPHABET_SIZE] = {0};
+    int key_len = strlen(key);
+    int idx = key_len;
+
+    // Mark the used letters in the partial key
+    for (int i = 0; i < key_len; i++) {
+        used[key[i] - 'a'] = 1;
+    }
+
+    // Fill the remaining letters in the key
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        if (!used[i]) {
+            key[idx++] = 'a' + i;
+        }
+    }
+    key[idx] = '\0';
+}
+
+void encrypt(char plaintext[], char key[]) {
+    for (int i = 0; i < strlen(plaintext); i++) {
+        if (plaintext[i] >= 'a' && plaintext[i] <= 'z') {
+            plaintext[i] = key[plaintext[i] - 'a'];
+        }
+    }
+}
+
+void decrypt(char ciphertext[], char key[]) {
+    for (int i = 0; i < strlen(ciphertext); i++) {
+        if (ciphertext[i] >= 'a' && ciphertext[i] <= 'z') {
+            for (int j = 0; j < ALPHABET_SIZE; j++) {
+                if (key[j] == ciphertext[i]) {
+                    ciphertext[i] = 'a' + j;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    char key[30] = {0};  // Initialize the key array with null characters
+    char text[1000];
+
+    printf("Enter the plaintext: ");
+    scanf("%[^\n]%*c", text);  // Read input including spaces until newline
+
+    printf("Enter the partial key: ");
+    scanf("%[^\n]%*c", key);  // Read input including spaces until newline
+
+    // Complete the key with remaining alphabet letters
+    completeKey(key);
+    printf("Completed key: %s\n", key);
+
+    // Encrypt plaintext
+    encrypt(text, key);
+    printf("Ciphertext: %s\n", text);
+
+    // Decrypt ciphertext
+    decrypt(text, key);
+    printf("Decrypted plaintext: %s\n", text);
+
+    return 0;
+}
